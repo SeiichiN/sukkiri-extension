@@ -1,11 +1,16 @@
 // p.52
 
 import java.util.Scanner;
+import java.util.InputMismatchException;
 
 public class Test3 {
     public static void main(String[] args) {
-        int num = getNum();
-        disp(num);
+        try {
+            int num = getNum();
+            disp(num);
+        } catch(InputMismatchException e) {
+            System.out.println("数字ではありません。");
+        }
     }
 
     private static int getNum() {
@@ -17,16 +22,29 @@ public class Test3 {
 
     private static void disp(int num) {
         int num2 = num * -1;
-        System.out.println("(byte)" + num + "   : " + toBinaryString((byte)num));
-        System.out.println("(byte)" + num2 + "  : " + toBinaryString((byte)num2));
-        System.out.println("(short)" + num + "  : " + toBinaryString((short)num));
-        System.out.println("(short)" + num2 + " : " + toBinaryString((short)num2));
-        System.out.println(num + "         : " + toBinaryString(num));
-        System.out.println(num2 + "        : " + toBinaryString(num2));
-        System.out.println(num + "L        : " + toBinaryString((long)num));
-        System.out.println(num2 + "L       : " + toBinaryString((long)num2));
-        System.out.println("'a'        : " + toBinaryString('a'));
-        System.out.println("'あ'       : " + toBinaryString('あ'));
+        System.out.printf("(byte)%-5d : ", num);
+        System.out.println(toBinaryString((byte)num));
+        System.out.printf("(byte)%-5d : ", num2);
+        System.out.println(toBinaryString((byte)num2));
+
+        System.out.printf("(short)%-5d: ", num);
+        System.out.println(toBinaryString((short)num));
+        System.out.printf("(short)%-5d: ", num2);
+        System.out.println(toBinaryString((short)num2));
+
+        System.out.printf("%-11d : ", num);
+        System.out.println(toBinaryString(num));
+        System.out.printf("%-11d : ", num2);
+        System.out.println(toBinaryString(num2));
+
+        System.out.printf("%-11s : ", (num + "L"));
+        System.out.println(toBinaryString((long)num));
+        System.out.printf("%-11s : ", (num2 + "L"));
+        System.out.println(toBinaryString((long)num2));
+        
+        System.out.println("'1'         : " + toBinaryString('1'));
+        System.out.println("'a'         : " + toBinaryString('a'));
+        System.out.println("'あ'        : " + toBinaryString('あ'));
     }
 
     private static String toBinaryString(byte x) {
@@ -76,4 +94,4 @@ public class Test3 {
     }
 }
 
-// 修正時刻: Sun 2022/05/15 13:28:11
+// 修正時刻: Sun 2022/05/15 14:12:18
