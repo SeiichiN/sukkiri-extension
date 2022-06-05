@@ -1,0 +1,86 @@
+
+プレイヤーを考える。
+
+ユーザー 対 コム1 対 コム2 などという2人以上のじゃんけんも可能なようにしておく。
+
+プレイヤーの属性(フィールド)として、以下を考える。
+
+1. 名前 -- ユーザーが自由に名前をつけられるようにする。
+2. 手   -- じゃんけんの手を保持する。
+3. 結果 -- 勝敗の結果を保持する。
+
+これらから、以下のようなクラスが考えられる。
+
+public class Player {
+  String name;
+  int hand;
+  String result;
+}
+
+メソッドは、通常どおりのゲッター、セッターとなるが、ただ、
+
+setHand() メソッドだけは通常と異なる。
+
+通常は、setHand()メソッドに引数として、int型の hand を与え、それを this.hand
+にセットするのだが、
+
+  public void setHand(int hand) { this.hand = hand; }
+
+今回は、各オブジェクトによってバラバラになるようにする。
+
+ユーザーのクラスなら、ユーザーがキーボードから入力して手を決めるであろう。
+コム1なら、ランダムに手を決めるだろう。
+コム2なら、前回の勝負を参考にして手を決めるだろう。
+コム3なら、もっと賢いやり方で手を決めるだろう。
+
+これを戦略クラスとして考える。
+この戦略クラスは各プレイヤークラスで交換可能とする。
+
+そして、この戦略クラスには統一規格として decideHand() メソッドが実装されており、
+そのメソッドを実行することで、各クラスの hand フィールドに 手がセットされるようにする。
+
+この戦略クラス以下のように設計する。
+RandomNextHandクラス -- ランダムに次の手を考えるクラス。
+CleverNextHandクラス -- 前回の勝負を参考にして次の手を考えるクラス。
+InputNextHandクラス -- 次の手をユーザーにキーボードから入力してもらうクラス。
+
+それぞれのクラスの統一規格として、decideHand() メソッドを設定する。
+それを NextHandインターフェースとする。
+
+public interface NextHand {
+  int decideHand();
+}
+
+各クラスは、この decideHand() を実装する。
+
+以上から、各クラスのフィールドに以下を追加する。
+
+NextHand nextHand;
+
+このフィールドは、以下のようにすることで、戦略クラスをセットできる。
+
+NextHand nextHand = new RandomNextHand();
+
+あるいは、
+
+NextHand nextHand = new InputNextHand();
+
+戦略クラスをセットするタイミングは、インスタンス作成時がいいだろう。
+
+public class Com {
+  String name;
+  int hand;
+  String result;
+  NextHand nextHand;
+
+  public Com (NextHand nextHand) {
+    this.nextHand = nextHand;
+  }
+}
+
+今、「Com」クラスとして考えたが、Com クラスも User クラスも内容はほとんど共通である。
+そこで、抽象クラスとして Playerクラスを考え、その具象クラスとして Com クラスや Userクラスを考えるとよい。
+
+
+
+;; 修正時刻: Sun 2022/06/05 18:03:41
