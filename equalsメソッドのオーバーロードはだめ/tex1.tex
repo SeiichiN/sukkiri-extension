@@ -1,0 +1,187 @@
+\documentclass[uplatex, dvipdfmx]{jsarticle}
+
+\include{begin}
+
+\section{equals()メソッドのオーバーライド}
+
+\subsection{準備}
+
+以下のような Userクラスを考える。
+
+\begin{lstlisting}[caption=User.java]
+public class User {
+  public String name;
+
+  public User(String name) {
+    this.name = name;
+  }
+}
+\end{lstlisting}
+
+\subsection{equals()メソッドのオーバーロード}
+
+これに、以下のような equals()メソッドをつくる。
+これは絶対にやってはいけないと言われているが、
+Objectクラスの equals()メソッドをオーバーライドするのではなくて、
+オーバーロードしてみる。
+
+\begin{lstlisting}[caption=User.java]
+...( つづき )...
+
+  public boolean equals(User u) {
+    if (this.name.equals(u.name)) {
+      return true;
+    }
+    return false;
+  }
+\end{lstlisting}
+
+テストのために、以下のようなコードを試してみると\dots\dots\dots。
+
+\begin{lstlisting}[caption=Main.java]
+public class Main {
+  public static void main(String[] args) {
+    User u1 = new User(``Sasuke'');
+    User u2 = new User(``Sasuke'');
+    System.out.println(u1.equals(u2));
+  }
+}
+\end{lstlisting}
+
+これは、\fbox{ true } と表示される。
+では、これは？
+
+\begin{lstlisting}[caption=Main.java]
+public class Main {
+  public static void main(String[] args) {
+    List<User> userList = new ArrayList<>();
+    User u1 = new User(``Sasuke'');
+    userList.add(u1);
+    u1 = new User(``Sasuke'');
+    userList.remove(u1);
+    for (User u : userList) {
+      System.out.println(u.name);
+    }
+    System.out.println(userList.size());
+  }
+}
+\end{lstlisting}
+
+これは \fbox{ Sasuke } / \fbox{ 1 } と表示される。
+この場合、userList に add() した h1 と、
+userList から remove() した h1 を同じものとして見なしていない
+ことがわかる。
+
+\begin{tcolorbox}
+ equals()メソッドのオーバーロードはバグの元となるので、絶対やらないように
+ と言われている。
+\end{tcolorbox}
+
+\subsection{equals()メソッドのオーバーライド}
+
+User.java の中の equals()メソッドを以下のように
+Objectクラスの equals()メソッドをオーバーライドしたものにすると、
+結果はちがってくる。
+
+\begin{lstlisting}[caption=User.java]
+...( つづき )...
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof User)) {
+      return false;
+    }
+    User u = (User) o;
+    if (this.name.equals(u.name)) {
+      return true;
+    }
+    return false;
+  }
+\end{lstlisting}
+
+このコードに変えてから Main.java を実行すると
+
+\fbox{ 0 } となる。
+
+\section{hashCode()メソッドのオーバーライド}
+
+equals()メソッドをオーバーライドしたら、hashCode()メソッドも
+オーバーライドしなければならない。
+
+\subsection{hashCode()をオーバーライドしない場合}
+
+先ほどの equals()メソッドをオーバーライドした Userクラスを
+使ってみる。
+
+以下のようなコードを試す。
+
+\begin{lstlisting}[caption=Main.java]
+import java.util.HashSet;
+import java.util.Set;
+
+public class Main {
+
+  public static void main(String[] args) {
+    Set<User> userSet = new HashSet<>();
+    User u = new User("Sasuke");
+    userSet.add(u);
+    showList(userSet);
+    u = new User("Sasuke");
+    userSet.remove(u);
+    showList(userSet);
+
+  }
+
+  public static void showList(Set<User> list) {
+    for (User u : list) {
+      System.out.println(u.name);
+    }
+    System.out.println("要素数:" + list.size());
+  }
+} 
+\end{lstlisting}
+
+このコードを実行すると、以下のように出力される。
+
+\begin{lstlisting}[label=console, numbers=none]
+Sasuke
+要素数:1
+Sasuke
+要素数:1
+\end{lstlisting}
+    
+途中で remove()されているのにもかかわらず、remove()されていない。
+
+\subsection{hashCode()メソッドのオーバーライド}
+
+そこで、以下のように hashCode()メソッドをオーバーライドする。
+
+\begin{lstlisting}[caption=User.java]
+...( つづき )...
+
+  @Override 
+  public int hashCode() {
+    int result = 37;
+    result = result * 31 + name.hashCode();
+    return result;
+  }
+}
+\end{lstlisting}
+
+こののち、先ほどの Mainクラスを実行すると、以下のように出力される。
+
+\begin{lstlisting}[label=console, numbers=none]
+Sasuke
+要素数:1
+要素数:0
+\end{lstlisting}
+
+
+
+
+\include{end}
+
+%% 修正時刻： Wed 2022/06/08 14:47:060
