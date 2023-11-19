@@ -1,14 +1,14 @@
 package garden;
 
-public class Rose extends Flower {
+public class Plum extends Flower {
 	// このフィールドを有効にすると、smell()は、このフィールドを参照する。
 	// したがって、null となる。
 	// しかし、このままだと、親クラスのフィールドを参照する。
 	// したがって、花 となる。
 	// public String name;
 	
-	public Rose () {}
-	public Rose (String name) {
+	public Plum () {}
+	public Plum (String name) {
 		super(name);
 	}
 	
